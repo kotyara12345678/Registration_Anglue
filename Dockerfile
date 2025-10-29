@@ -1,9 +1,11 @@
 # Базовый образ
 FROM python:3.13-slim
 
-RUN python -m pip install --upgrade pip setuptools wheel \
-    && apt-get update \
-    && apt-get install -y build-essential libpq-dev curl \
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    curl \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -17,3 +19,4 @@ COPY . .
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #  docker-compose up --build
+#  http://127.0.0.1:8000/docs#/

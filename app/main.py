@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, Response, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
+from starlette.staticfiles import StaticFiles
+
 from app.Auth_core.Auth_database import get_db, Base, engine
 from app.Auth_work.auth import AuthManager
 from app.Auth_schemas.schemas import UserCreate, UserLogin
@@ -11,6 +13,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 auth = AuthManager()
 templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):

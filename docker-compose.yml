@@ -8,12 +8,18 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
   web:
     build: .
-    command: uvicorn app.main:app --host 0.0.0.0 --reload
+    command: sh -c "while ! pg_isready -h db -U postgres; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --reload"
     volumes:
       - .:/code
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy

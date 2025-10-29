@@ -1,8 +1,8 @@
 from fastapi import Response, HTTPException, Depends
 from sqlalchemy.orm import Session
 from authx import AuthX, AuthXConfig
-from .models import User
-from .database import get_db
+from app.Auth_models.models import User
+from app.Auth_core.Auth_database import get_db
 
 class AuthManager:
     def init(self):
