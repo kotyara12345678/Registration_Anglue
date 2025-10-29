@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+</head>
+<body>
+    <form id="registerForm">
+        <h2>Регистрация</h2>
+        <div class="error" id="errorMsg"></div>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <input type="password" id="passwordRepeat" placeholder="Повторите пароль" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <script src="{{ url_for('static', path='js/register.js') }}"></script>
+</body>
+</html>

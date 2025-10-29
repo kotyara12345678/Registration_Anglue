@@ -1,30 +1,38 @@
-from fastapi import FastAPI, HTTPException, Depends
-from authx import AuthX, AuthXConfig
-from app.Auth_schemas.schemas import UserLoginSchema
+from fastapi import FastAPI, Request, Response, Depends, HTTPException
+from fastapi.responses import HTMLResponse
+from sqlalchemy.orm import Session
+from app.Auth_core.Auth_database import get_db, Base, engine
+from app.Auth_work.auth import AuthManager
+from app.Auth_schemas.schemas import UserCreate, UserLogin
+from fastapi.templating import Jinja2Templates
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+auth = AuthManager()
+templates = Jinja2Templates(directory="app/templates")
 
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
-config = AuthXConfig()
-config.JWT_SECRET_KEY = "SECRET_KEY"
-config.JWT_ACCESS_COOKIE_NAME = "access_token"
-config.JWT_TOKEN_LOCATION = ["cookies"]
-
-security = AuthX(config=config)
+@app.post("/register")
+async def register(data: UserCreate, db: Session = Depends(get_db)):
+    if data.password != data.password_repeat:
+        raise HTTPException(status_code=400, detail="Пароли не совпадают")
+    user = auth.register(db, data.email, data.password)
+    return {"message": "Регистрация успешна", "email": user.email}
 
 @app.post("/login")
-async def login(creds: UserLoginSchema):
+async def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
+    user = auth.login(db, response, data.email, data.password)
+    return {"message": "Вход успешен", "email": user.email}
 
-    if creds.username == "test" and creds.password == "test":
-
-        access_token = security.create_access_token(subject=creds.username)
-
-        response = {"access_token": access_token}
-        security.set_access_cookie(response, access_token)
-        return response
-
-    raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+@app.post("/logout")
+async def logout(response: Response):
+    auth.logout(response)
+    return {"message": "Вы вышли"}
 
 @app.get("/protected")
-async def protected(user=Depends(security.access_token_required)):
-    return {"message": f"Добро пожаловать, {user['sub']}!"}
+async def protected(user=Depends(auth.auth_required)):
+    return {"message": f"Добро пожаловать, {user['uid']}!"}
