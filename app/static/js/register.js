@@ -21,16 +21,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ email, password })
+                credentials: "include",
+                body: JSON.stringify({
+                    email,
+                    password,
+                    password_repeat: passwordRepeat
+                })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                errorMsg.textContent = data.detail || "Ошибка регистрации";
+
+                if (data.detail && Array.isArray(data.detail)) {
+                    errorMsg.textContent = data.detail.map(err => err.msg).join(", ");
+                } else {
+                    errorMsg.textContent = data.detail || "Ошибка регистрации";
+                }
             } else {
-                alert("Регистрация успешна! Войдите.");
-                window.location.href = "/login";
+                alert("Регистрация успешна! Теперь можно войти.");
+                window.location.href = "/"; // Переход на страницу входа
             }
         } catch (err) {
             errorMsg.textContent = "Ошибка сети";

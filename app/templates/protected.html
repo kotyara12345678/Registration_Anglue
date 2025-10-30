@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Защищённая страница</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+</head>
+<body>
+    <h2>Добро пожаловать на защищённую страницу!</h2>
+    <p>Ваш UID: {{ user.uid }}</p>
+    <p>Ваш Email: {{ user.email }}</p>
+
+    <form id="logoutForm">
+        <button type="submit">Выйти</button>
+    </form>
+
+    <script>
+        const logoutForm = document.getElementById("logoutForm");
+        logoutForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch("/logout", { method: "POST" });
+            if (response.ok) {
+                alert("Вы вышли");
+                window.location.href = "/";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Вход</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='static/css/style.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
     <form id="loginForm">
@@ -13,6 +14,7 @@
         <input type="password" id="password" placeholder="Пароль" required>
         <button type="submit">Войти</button>
     </form>
+
     <script src="{{ url_for('static', path='js/login.js') }}"></script>
 </body>
 </html>

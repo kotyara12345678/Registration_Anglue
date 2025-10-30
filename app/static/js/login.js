@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
+                credentials: "include",
                 body: JSON.stringify({ email, password })
             });
 
@@ -23,9 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 errorMsg.textContent = data.detail || "Ошибка входа";
             } else {
-                alert("Вход успешен!");
                 window.location.href = "/protected";
             }
         } catch (err) {
             errorMsg.textContent = "Ошибка сети";
             console.error(err);
+        }
+    });
+});
