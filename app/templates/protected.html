@@ -6,19 +6,21 @@
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
-    <h2>Добро пожаловать на защищённую страницу!</h2>
-    <p>Ваш UID: {{ user.uid }}</p>
-    <p>Ваш Email: {{ user.email }}</p>
+    <div class="container">
+        <h2>Добро пожаловать на защищённую страницу!</h2>
+        <p>Ваш UID: {{ user.uid }}</p>
+        <p>Ваш Email: {{ user.email }}</p>
 
-    <form id="logoutForm">
-        <button type="submit">Выйти</button>
-    </form>
+        <form id="logoutForm">
+            <button type="submit">Выйти</button>
+        </form>
+    </div>
 
     <script>
         const logoutForm = document.getElementById("logoutForm");
         logoutForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const response = await fetch("/logout", { method: "POST" });
+            const response = await fetch("/logout", { method: "POST", credentials: "include" });
             if (response.ok) {
                 alert("Вы вышли");
                 window.location.href = "/";
