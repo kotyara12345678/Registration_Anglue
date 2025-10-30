@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request, Response, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
-
 from app.Auth_core.Auth_database import get_db, Base, engine
 from app.Auth_work.auth import AuthManager
 from app.Auth_schemas.schemas import UserCreate, UserLogin
