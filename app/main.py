@@ -15,6 +15,7 @@ auth = AuthManager()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Шаблоны и статика
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 

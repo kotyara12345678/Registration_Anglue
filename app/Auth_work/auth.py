@@ -9,7 +9,7 @@ class AuthManager:
         config = AuthXConfig()
         config.JWT_SECRET_KEY = "SECRET_KEY"
         config.JWT_ACCESS_COOKIE_NAME = "access_token"
-        config.JWT_TOKEN_LOCATION = ["cookies"]
+        config.JWT_TOKEN_LOCATION = ["cookies"]  # ищем токен в куках
         self.security = AuthX(config=config)
 
     def register(self, db: Session, email: str, password: str):
@@ -33,5 +33,6 @@ class AuthManager:
     def logout(self, response: Response):
         self.security.unset_cookies(response=response)
 
-    def auth_required(self, user=Depends(AuthX(config=AuthXConfig()).access_token_required)):
+
+    def auth_required(self, user=Depends(lambda: AuthManager().security.access_token_required)):
         return user

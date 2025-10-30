@@ -22,8 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (!response.ok) {
-                errorMsg.textContent = data.detail || "Ошибка входа";
+
+                if (typeof data.detail === "object") {
+                    errorMsg.textContent = JSON.stringify(data.detail);
+                } else {
+                    errorMsg.textContent = data.detail || "Ошибка входа";
+                }
             } else {
+
                 window.location.href = "/protected";
             }
         } catch (err) {

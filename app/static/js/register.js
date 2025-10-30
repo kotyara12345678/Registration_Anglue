@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                credentials: "include",
+                credentials: "include", // важно для работы с куки
                 body: JSON.stringify({
                     email,
                     password,
@@ -33,14 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
 
-                if (data.detail && Array.isArray(data.detail)) {
-                    errorMsg.textContent = data.detail.map(err => err.msg).join(", ");
+                if (typeof data.detail === "object") {
+                    errorMsg.textContent = JSON.stringify(data.detail);
                 } else {
                     errorMsg.textContent = data.detail || "Ошибка регистрации";
                 }
             } else {
                 alert("Регистрация успешна! Теперь можно войти.");
-                window.location.href = "/"; // Переход на страницу входа
+                window.location.href = "/";
             }
         } catch (err) {
             errorMsg.textContent = "Ошибка сети";

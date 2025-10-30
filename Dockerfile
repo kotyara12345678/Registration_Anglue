@@ -18,4 +18,4 @@ COPY . .
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #  docker-compose up --build
-#  http://127.0.0.1:8000/docs#/
+#  http://127.0.0.1:8000/register/
