@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     curl \
     postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*  #комрилятор для бд НЕ ТРОГАТЬ
 
 WORKDIR /app
 
