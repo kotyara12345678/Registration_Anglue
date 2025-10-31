@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.Auth_core.Auth_database import get_db, Base, engine
 from app.Auth_work.auth import AuthManager
 from app.Auth_schemas.schemas import UserCreate, UserLogin
+from app.messaging.producer import producer as mq_producer  # ⬅️ добавлен импорт RabbitMQ
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,9 +16,27 @@ auth = AuthManager()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Шаблоны и статика
+# шаблоны и статика
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
+
+@app.on_event("startup")
+async def on_startup():
+    try:
+        await mq_producer.connect()
+        print(" RabbitMQ producer connected")
+    except Exception as e:
+        print(" RabbitMQ connection failed:", e)
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    try:
+        await mq_producer.close()
+        print(" RabbitMQ connection closed")
+    except Exception as e:
+        print("⚠ Error closing RabbitMQ:", e)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -39,7 +58,22 @@ async def protected_page(request: Request, user=Depends(auth.auth_required)):
 async def register(data: UserCreate, db: Session = Depends(get_db)):
     if data.password != data.password_repeat:
         raise HTTPException(status_code=400, detail="Пароли не совпадают")
+
     user = auth.register(db, data.email, data.password)
+
+    try:
+        await mq_producer.publish(
+            routing_key="user.registered",
+            payload={
+                "event": "user.registered",
+                "email": user.email,
+                "id": getattr(user, "id", None),
+            },
+        )
+        print(f" Sent event: user.registered ({user.email})")
+    except Exception as e:
+        print(" Failed to publish RabbitMQ event:", e)
+
     return {"message": "Регистрация успешна", "email": user.email}
 
 
